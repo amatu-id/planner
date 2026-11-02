@@ -330,7 +330,7 @@ function toggleTodo(k) {
 async function rpc(fn, args) { // retries: some networks drop connections
   for (let i = 0; ; i++) {
     try {
-      const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, { method: 'POST', cache: 'no-store', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(args) });
+      const r = await fetch(`${/^(book_(get|put|rev)|(nt|pl|cl|en|zh)_(list|put|admin))$/.test(fn) ? SB_URL + '/functions/v1/amatu-drive/rpc/' : SB_URL + '/rest/v1/rpc/'}${fn}`, { method: 'POST', cache: 'no-store', headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(args) });
       if (!r.ok) { const e = new Error('server ' + r.status); e.server = true; throw e; }
       const t = await r.text(); return t ? JSON.parse(t) : null;
     } catch (e) { if (i >= 4 || e.server) throw navigator.onLine ? e : new Error('offline'); await new Promise(r => setTimeout(r, 300 * (i + 1))); }

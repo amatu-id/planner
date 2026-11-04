@@ -372,8 +372,9 @@ async function syncNow() {
     S.sync.at = new Date(); S.sync.err = '';
   } catch (e) { S.sync.err = e?.message === 'offline' ? 'offline — tersimpan di perangkat ini' : (e?.message || String(e)); }
   finally { S.sync.busy = false; }
+  if (changed) S.sync.redraw = true; // a second round after this one must still draw what this one brought in
   if (S.sync.again) { S.sync.again = false; return syncNow(); }
-  if (changed) render(); else showSync();
+  if (S.sync.redraw) { S.sync.redraw = false; render(); } else showSync();
 }
 // realtime: supabase broadcast pings (no data inside), plus a 10 s check
 let sb = null, chans = [];
